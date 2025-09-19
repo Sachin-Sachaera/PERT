@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PERT Table</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+      margin-bottom: 15px;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 8px 12px;
+      text-align: center;
+    }
+    th {
+      background: #ddd;
+    }
+    input {
+      width: 70px;
+      padding: 4px;
+      text-align: center;
+    }
+    .activity {
+      width: 100px;
+    }
+    button {
+      padding: 10px 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h2>PERT Estimation Table</h2>
+  <table id="pertTable">
+    <thead>
+      <tr>
+        <th>Activity</th>
+        <th>to</th>
+        <th>tm</th>
+        <th>tp</th>
+        <th>te = (to+4tm+tp)/6</th>
+        <th>σ = (tp-to)/6</th>
+        <th>σ²</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows will be added here -->
+    </tbody>
+  </table>
+
+  <button onclick="addRow()">➕ Add Activity</button>
+
+  <script>
+    function addRow() {
+      const tbody = document.querySelector("#pertTable tbody");
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td><input type="text" class="activity"></td>
+        <td><input type="number" class="to"></td>
+        <td><input type="number" class="tm"></td>
+        <td><input type="number" class="tp"></td>
+        <td class="te"></td>
+        <td class="sigma"></td>
+        <td class="sigma2"></td>
+      `;
+
+      tbody.appendChild(row);
+
+      // attach input listener for auto calculation
+      row.querySelectorAll("input").forEach(input => {
+        input.addEventListener("input", calculate);
+      });
+    }
+
+    function calculate() {
+      document.querySelectorAll("#pertTable tbody tr").forEach(row => {
+        const to = parseFloat(row.querySelector(".to")?.value) || 0;
+        const tm = parseFloat(row.querySelector(".tm")?.value) || 0;
+        const tp = parseFloat(row.querySelector(".tp")?.value) || 0;
+
+        if (to && tm && tp) {
+          const te = (to + 4 * tm + tp) / 6;
+          const sigma = (tp - to) / 6;
+          const sigma2 = sigma * sigma;
+
+          row.querySelector(".te").textContent = te.toFixed(2);
+          row.querySelector(".sigma").textContent = sigma.toFixed(2);
+          row.querySelector(".sigma2").textContent = sigma2.toFixed(2);
+        } else {
+          row.querySelector(".te").textContent = "";
+          row.querySelector(".sigma").textContent = "";
+          row.querySelector(".sigma2").textContent = "";
+        }
+      });
+    }
+
+    // Add one row initially
+    addRow();
+  </script>
+</body>
+</html>
